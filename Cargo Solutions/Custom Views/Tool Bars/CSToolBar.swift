@@ -1,14 +1,15 @@
 //
-//  CSImageView.swift
+//  CSToolBar.swift
 //  Cargo Solutions
 //
-//  Created by Christian Diaz on 2/20/23.
+//  Created by Christian Diaz on 2/27/23.
 //
 
 import UIKit
+import MessageUI
 
-class CSImageView: UIImageView {
-    
+class CSToolBar: UIToolbar {
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -19,8 +20,13 @@ class CSImageView: UIImageView {
     }
     
     private func configure() {
-        contentMode = .scaleToFill
-        clipsToBounds = true
+        
+        barStyle = .default
+        isTranslucent = true
+        barTintColor = .systemGroupedBackground
+        tintColor = .systemBlue
         translatesAutoresizingMaskIntoConstraints = false
+        isUserInteractionEnabled = true
     }
+    
 }

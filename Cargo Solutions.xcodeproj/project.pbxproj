@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B3128D829AD6926002FE857 /* CSMailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3128D729AD6925002FE857 /* CSMailViewController.swift */; };
+		7B3128DD29AD7C20002FE857 /* CSToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3128DC29AD7C20002FE857 /* CSToolBar.swift */; };
 		7B56E075299EEC6D00D1E827 /* CSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B56E074299EEC6D00D1E827 /* CSButton.swift */; };
 		7B56E079299EED9200D1E827 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B56E078299EED9200D1E827 /* UIView+Ext.swift */; };
 		7B8CDC1929A09F6B0009E909 /* Trailers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8CDC1829A09F6B0009E909 /* Trailers.swift */; };
@@ -26,6 +28,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7B3128D729AD6925002FE857 /* CSMailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSMailViewController.swift; sourceTree = "<group>"; };
+		7B3128DC29AD7C20002FE857 /* CSToolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSToolBar.swift; sourceTree = "<group>"; };
 		7B56E074299EEC6D00D1E827 /* CSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSButton.swift; sourceTree = "<group>"; };
 		7B56E078299EED9200D1E827 /* UIView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
 		7B8CDC1829A09F6B0009E909 /* Trailers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trailers.swift; sourceTree = "<group>"; };
@@ -57,6 +61,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7B3128D429AD683D002FE857 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				7B3128D729AD6925002FE857 /* CSMailViewController.swift */,
+			);
+			path = "View Controllers";
+			sourceTree = "<group>";
+		};
+		7B3128DB29AD7C05002FE857 /* Tool Bars */ = {
+			isa = PBXGroup;
+			children = (
+				7B3128DC29AD7C20002FE857 /* CSToolBar.swift */,
+			);
+			path = "Tool Bars";
+			sourceTree = "<group>";
+		};
 		7B56E073299EEC5A00D1E827 /* Buttons */ = {
 			isa = PBXGroup;
 			children = (
@@ -147,6 +167,8 @@
 		7BF318D12926FA4000596E2D /* Custom Views */ = {
 			isa = PBXGroup;
 			children = (
+				7B3128DB29AD7C05002FE857 /* Tool Bars */,
+				7B3128D429AD683D002FE857 /* View Controllers */,
 				7B8CDC2629A402D10009E909 /* Image Views */,
 				7B8CDC1F29A16B290009E909 /* Labels */,
 				7B8CDC1C29A162450009E909 /* Cells */,
@@ -258,6 +280,7 @@
 				7B8CDC2529A401870009E909 /* DocumentCell.swift in Sources */,
 				7B8CDC2329A328CA0009E909 /* DocumentsListVC.swift in Sources */,
 				7B8CDC2829A402ED0009E909 /* CSImageView.swift in Sources */,
+				7B3128DD29AD7C20002FE857 /* CSToolBar.swift in Sources */,
 				7B8CDC1E29A1626B0009E909 /* TrailerCell.swift in Sources */,
 				7B8CDC2129A16B660009E909 /* CSTitleLabel.swift in Sources */,
 				7BF318BE2926F45000596E2D /* AppDelegate.swift in Sources */,
@@ -267,6 +290,7 @@
 				7BF318C02926F45000596E2D /* SceneDelegate.swift in Sources */,
 				7BF318D82926FB5800596E2D /* LoginVC.swift in Sources */,
 				7B8CDC1929A09F6B0009E909 /* Trailers.swift in Sources */,
+				7B3128D829AD6926002FE857 /* CSMailViewController.swift in Sources */,
 				7BF318D42926FA6F00596E2D /* CSTextField.swift in Sources */,
 				7B8CDC2B29A421690009E909 /* UIHelper.swift in Sources */,
 			);
