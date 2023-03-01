@@ -8,34 +8,42 @@
 import UIKit
 import VisionKit
 import MessageUI
+import PDFKit
 
 class DocumentsListVC: UIViewController {
     
+// MARK: - UI & Model Propertiess
     var collectionView: UICollectionView!
+    var dataSource: UICollectionViewDiffableDataSource<Section, Document>!
     var csToolBar: CSToolBar!
-    var numOfDocuments = 0 
-    var documents: [UIImage] = []
+    
+    var documents: [Document] = []
+    
+// MARK: - Utility Properties
+    var numOfDocuments = 0
+    
+    enum Section {
+        case main
+    }
+    
+// MARK: - Lifecycle Methods
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(configureDocumentView))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(presentDocumentVC))
         navigationController?.setNavigationBarHidden(false, animated: true)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureCollectionView()
+        configureDataSource()
         configureToolBar()
         configureViewController()
     }
-
-    @objc private func configureDocumentView() {
-        documents = []      
-        let scanningDocumentVC = VNDocumentCameraViewController()
-        scanningDocumentVC.delegate = self
-        self.present(scanningDocumentVC, animated: true)
-    }
     
+// MARK: - UI Configuration Methods
+
     private func configureViewController() {
         view.backgroundColor = .systemGroupedBackground
         view.addSubViews(collectionView, csToolBar)
@@ -61,7 +69,6 @@ class DocumentsListVC: UIViewController {
         collectionView.backgroundColor = .systemGroupedBackground
         
         collectionView.delegate = self
-        collectionView.dataSource = self
         
         collectionView.register(DocumentCell.self, forCellWithReuseIdentifier: DocumentCell.reuseID)
         
@@ -73,9 +80,43 @@ class DocumentsListVC: UIViewController {
         
         let flexibleButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let sendButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(sendMail))
-        let editButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(sendMail))
+        let editButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(sendMail))
+        let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(removeDocuments))
         
-        csToolBar.setItems([flexibleButton, sendButton, flexibleButton, editButton, flexibleButton], animated: true)
+        csToolBar.setItems([editButton, flexibleButton, sendButton, flexibleButton, deleteButton], animated: true)
+    }
+    
+//MARK: - Data Source Configuration Methods
+    
+    // Function that connects a diffable data source to our collection view
+    func configureDataSource() {
+        // dataSource's cellprovider closure is called for eaach cell displayed on the UI
+        dataSource = UICollectionViewDiffableDataSource<Section, Document>(collectionView: collectionView, cellProvider: { collectionView, indexPath, follower in
+            // Configures our collection view with a Follower Cell. The follower cell defines how to display the cell on the UI.
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DocumentCell.reuseID, for: indexPath) as! DocumentCell
+            cell.documentImageView.image = self.documents[indexPath.row].image
+            return cell
+        })
+    }
+    
+    func updateData(on documents: [Document]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Document>()
+        // Feeds data to a snapshot that will be applied to the diffable data source
+        snapshot.appendSections([.main])
+        snapshot.appendItems(documents, toSection: .main)
+        DispatchQueue.main.async {
+            // Applies the data, calls dataSource's closure for each cell and displays the results to the UI
+            self.dataSource.apply(snapshot, animatingDifferences: true)
+        }
+    }
+
+//MARK: - Utility Methods
+    
+    @objc private func presentDocumentVC() {
+        documents = []
+        let scanningDocumentVC = VNDocumentCameraViewController()
+        scanningDocumentVC.delegate = self
+        self.present(scanningDocumentVC, animated: true)
     }
     
     @objc private func sendMail() {
@@ -85,44 +126,47 @@ class DocumentsListVC: UIViewController {
             let mail = MFMailComposeViewController()
             mail.mailComposeDelegate = self
             mail.setToRecipients(["sulacidi@gmail.com"])
-            mail.setMessageBody("<p>You're so awesome!</p>", isHTML: true)
+            //mail.setMessageBody("", isHTML: true)
             
             if MFMessageComposeViewController.canSendAttachments() {
-                let image = documents[0]
-                let dataImage = image.pngData()
-                guard dataImage != nil else {return}
-                mail.addAttachmentData(dataImage!, mimeType: "image/png", fileName: "ImageData.png")
+                var documentImages: [UIImage] = []
+                for document in documents {
+                    documentImages.append(document.image)
+                }
+                let pdfDocument = documentImages.makePDF()
+                let data = pdfDocument?.dataRepresentation()
+                guard data != nil else {return}
+                mail.addAttachmentData(data!, mimeType: "application/pdf", fileName: "ImageData.pdf")
             }
             present(mail, animated: true)
         } else {
             // show failure alert
         }
     }
+    
+    @objc private func removeDocuments() {
+        documents = []
+        updateData(on: documents)
+    }
 }
+
+//MARK: - Extensions
 
 extension DocumentsListVC: VNDocumentCameraViewControllerDelegate {
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
         numOfDocuments = scan.pageCount
         for pageNum in 0..<scan.pageCount {
             let image = scan.imageOfPage(at: pageNum)
-            documents.append(image)
+            let document = Document(image: image)
+            documents.append(document)
         }
-        collectionView.reloadData()
+        updateData(on: documents)
         controller.dismiss(animated: true)
     }
 }
 
-extension DocumentsListVC: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-       return numOfDocuments
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DocumentCell.reuseID, for: indexPath) as! DocumentCell
-        cell.documentImageView.image = documents[indexPath.row]
-
-        return cell
-    }
+extension DocumentsListVC: UICollectionViewDelegate {
+  
 }
 
 extension DocumentsListVC: MFMailComposeViewControllerDelegate {
